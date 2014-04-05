@@ -157,10 +157,12 @@
                 if (bg1 == bg2) {
                     console.log("match!");
                     $(".open").each(function() {
-                        $(this).off("click", onClick);
-                        var el = this
+                        var front = $(this).find(".front");
+                        var cell = $(this);
+                        front.off("click", onClick);
                         setTimeout(function() {
-                            $(el).removeClass("open").addClass("done animated  bounce");
+                            cell.removeClass("open").addClass("done");
+                            front.removeClass("open").addClass(" animated  bounce");
                             if ($(".done").length == images.length) {
                                 setTimeout(onWin, 1000);
                             }
@@ -169,11 +171,13 @@
                 }
                 else {
                     $(".open").each(function() {
-                        $(this).addClass("animated shake")
+                        var front = $(this).find(".front");
+                        var cell = $(this);
+                        front.addClass("animated shake")
                             .on(animationEnd, function() {
-                                var el = this;
                                 setTimeout(function() {
-                                    $(el).removeClass("open animated shake");
+                                    cell.removeClass("open");
+                                    front.removeClass("animated shake");
                                 }, 300)
                             });
                     });
@@ -182,7 +186,7 @@
         }
         
         function onWin() {
-            $(".done").addClass("animated tada");
+            $(".done .front").addClass("animated tada");
             setTimeout (function() {
                 $("#replay").addClass("visible");
             }, 2000);
