@@ -1,0 +1,205 @@
+<html>
+<head>
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <link rel="stylesheet" href="css/animate.min.css">
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #container {
+            width: 100%;
+            height: 100%
+        }
+        
+        table {
+            width: 100%;
+            height: 100%;
+        }
+        
+        td {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        td.open .front, td.done .front{
+            background-size: auto 85%;
+        }
+        
+        td.open .front{
+            transition: background-size 0.1s 0.15s cubic-bezier(.09, .33, .45, 1.47);
+        }
+        
+        .front, .back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .front {
+            background-position: center;
+            background-size: 0 0;
+            background-repeat: no-repeat;
+        }
+        
+        .back {
+            background-image: url(img/back.svg);
+            background-size: auto 35%;
+        }
+        
+        td.open .back, td.done .back{
+            background-size: 0 0; 
+            opacity: 0;
+        }
+        
+        td.open .back {
+            transition: background-size 0.15s, opacity 0s 0.15s;
+        }
+        
+        .shake {
+            -webkit-animation-duration: 1s;
+            -webkit-animation-delay: 0.5s;
+            -webkit-animation-iteration-count: 0.8;
+        }
+        
+        #replay {
+            top: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,255,255,0.6);
+            background-image: url(img/replay.svg);
+            background-size: 30%;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+            pointer-events: none;
+        }
+        
+        #replay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <div id="replay"></div>
+    <script>
+        
+        var animationEnd = "webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend";
+        var images = 
+            ['Brokolly.svg',
+            'Ketchup.svg',
+            'Kube.svg',
+            'Olive.svg',
+            'Salami.svg',
+            'Scramblled.svg'];
+        
+        var rows = 3;
+        var cols = 4;
+        
+        // duplicate:
+        images = images.concat(images);
+        
+        var container = $("#container");
+        
+        reset();
+        
+        $("#replay").on("click", reset);
+        
+        function reset () {
+            images = shuffleArray(images);
+            $("#replay").removeClass("visible");
+            container.empty();
+            container.append("<table></table>");
+            
+            for (var i = 0; i < rows; i++) {
+                var row = $("<tr></tr>");
+                
+                for (var j = 0; j < cols; j++) {
+                    var imgsrc = "url(img/" + images[j + i*cols] + ")";
+                   
+                    var col = $("<td></td");
+                    
+                    var front = $("<div></div>").addClass("front");
+                    front.css("background-image", imgsrc);
+                    var back = $("<div></div>").addClass("back");
+                    col.append(front);
+                    col.append(back);
+                    col.on("click", onClick);
+                    row.append(col);
+                }
+                
+                $("table").append(row); 
+            }
+        }
+        
+        function onClick() {
+            if ($(".open").length == 2) return;
+            
+            
+            $(this).toggleClass("open", true);
+            
+            
+            if ($(".open").length == 2) {
+                
+                var bg1 = $(".open").eq(0).find(".front").css("background-image");
+                var bg2 = $(".open").eq(1).find(".front").css("background-image");
+                
+                if (bg1 == bg2) {
+                    console.log("match!");
+                    $(".open").each(function() {
+                        $(this).off("click", onClick);
+                        var el = this
+                        setTimeout(function() {
+                            $(el).removeClass("open").addClass("done animated  bounce");
+                            if ($(".done").length == images.length) {
+                                setTimeout(onWin, 1000);
+                            }
+                        }, 500);
+                    });
+                }
+                else {
+                    $(".open").each(function() {
+                        $(this).addClass("animated shake")
+                            .on(animationEnd, function() {
+                                var el = this;
+                                setTimeout(function() {
+                                    $(el).removeClass("open animated shake");
+                                }, 300)
+                            });
+                    });
+                }
+            }
+        }
+        
+        function onWin() {
+            $(".done").addClass("animated tada");
+            setTimeout (function() {
+                $("#replay").addClass("visible");
+            }, 2000);
+        }
+        
+        function shuffleArray(array) {
+            for (var i = array.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+            return array;
+        }
+        
+    </script>
+    
+    
+</body>
+</html>
