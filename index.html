@@ -22,6 +22,10 @@
             overflow: hidden;
         }
         
+        td:not(.open), td:not(.done){
+            cursor: pointer;
+        }
+        
         td.open .front, td.done .front{
             background-size: auto 85%;
         }
@@ -48,8 +52,14 @@
         }
         
         .back {
+            transition: background-size 0.15s, opacity 0s 0.15s;
             background-image: url(img/back.svg);
             background-size: auto 35%;
+        }
+        
+        .back:hover {
+            transition-duration:0.1s;
+            background-size: auto 50%;
         }
         
         td.open .back, td.done .back{
@@ -58,7 +68,6 @@
         }
         
         td.open .back {
-            transition: background-size 0.15s, opacity 0s 0.15s;
         }
         
         .shake {
@@ -85,6 +94,7 @@
         #replay.visible {
             opacity: 1;
             pointer-events: auto;
+            cursor: pointer;
         }
     
     </style>
